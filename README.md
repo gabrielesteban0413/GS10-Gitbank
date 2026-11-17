@@ -1,54 +1,72 @@
-# Expo Native App
+# Gidbank — Banca digital
 
-Aplicacion movil desarrollada con React Native y Expo que integra dos funcionalidades
-nativas (camara y ubicacion) y un sensor del dispositivo (acelerometro), con navegacion
-por pestañas y pilas, adaptacion al sistema operativo y compilacion de APK mediante EAS.
+Aplicación móvil de demostración con React Native, Expo y Reanimated. Las
+animaciones del taller forman parte de operaciones y controles bancarios; no se
+presentan como ejercicios aislados.
 
-## Estructura del proyecto
+> Gidbank es un prototipo educativo. Los saldos y movimientos son ficticios, se
+> guardan solo en memoria durante la sesión y no se realizan operaciones reales.
 
-expo-native-app
-App.js
-app.json
-eas.json
-babel.config.js
-package.json
-src
-components
-hooks
-navigation
-screens
-services
-theme
-utils
+## Instalación y ejecución
 
-## Requisitos
+Requisitos: Node.js 18 o superior y npm.
 
-- Node.js 18 o superior
-- npm o yarn
-- Cuenta de Expo para generar el APK con EAS Build
-
-## Instalacion
-
+```bash
 npm install
-
-## Ejecucion en desarrollo
-
 npm start
+```
 
-## Compilacion del APK
+Inicios específicos: `npm run android`, `npm run ios` o `npm run web`.
 
+## Logo de la aplicación
+
+Coloca tu archivo con el nombre `logo.png` en la carpeta `assets/` de la raíz
+del proyecto: `assets/logo.png`. Esa carpeta queda junto a `App.js` y
+`package.json`. Cuando esté disponible, se puede conectar en el encabezado de
+Inicio y en el encabezado del menú lateral; por ahora la aplicación muestra el
+nombre Gidbank como texto.
+
+## Taller de animación integrado en la banca
+
+| # | Requisito | Uso bancario y cómo probarlo |
+|---|---|---|
+| 1 | Arrastre con rotación | En **Transferir**, elige $25, $50 o $100 y arrastra el importe. El token rota hacia el lado del gesto; suéltalo hacia **Bolsillo Viaje** para preparar el movimiento. |
+| 2 | Indicador de carga | Tras preparar el importe, toca **Confirmar transferencia**. El spinner empieza al entrar en el estado de procesamiento y gira en bucle mientras la barra de progreso avanza; al terminar, se actualizan los saldos y la actividad de demostración. |
+| 3 | Gestos multitáctiles | En **Tarjetas**, toca **Ver tarjeta**. Usa uno o varios dedos para desplazar, ampliar/reducir y rotar la tarjeta virtual simultáneamente. |
+| 4 | Rebote al pulsar | En **Tarjetas**, pulsa **Congelar tarjeta** o **Descongelar**. El control se encoge mientras se presiona y recupera su tamaño con un rebote al soltarlo. |
+| 5 | Carrusel animado | En **Tarjetas**, desliza horizontalmente entre Gidbank Débito, Gidbank Virtual y Gidbank Viajes. Las tarjetas cambian con transiciones de posición, escala y rotación. |
+| 6 | Acelerómetro | En **Inicio**, agita un dispositivo móvil para ocultar el saldo por privacidad; el icono de privacidad también se anima. Toca el icono del ojo para mostrar el saldo otra vez. El acelerómetro no está disponible en la versión web. |
+| 7 | Drawer Navigation | Abre el menú lateral para navegar entre **Inicio, Tarjetas, Transferir, Actividad, Escáner QR, Sucursales, Seguridad** y **Perfil**. El menú reúne funciones bancarias, no páginas separadas para cada ejercicio. |
+
+## Flujos de la aplicación
+
+- **Inicio:** saldo, tarjeta principal, bolsillo de ahorro, actividad reciente y
+  controles de privacidad.
+- **Transferir:** movimiento de dinero simulado desde la cuenta principal a
+  Bolsillo Viaje; al completarlo, cambian el saldo, los ahorros y el historial.
+- **Tarjetas:** carrusel de tarjetas, controles locales para congelarlas y una
+  vista interactiva para mover, ampliar, rotar y voltear la tarjeta. El reverso
+  muestra el titular, los últimos cuatro dígitos, el tipo de tarjeta y el
+  estado; los datos sensibles permanecen ocultos.
+- **Actividad:** historial de demostración con filtros para ingresos y gastos.
+- **Escáner QR, Sucursales, Seguridad y Perfil:** herramientas bancarias y del
+  dispositivo disponibles desde el menú lateral.
+
+## Tecnologías
+
+- Expo y React Native
+- React Native Reanimated y Worklets
+- React Native Gesture Handler
+- React Navigation Drawer
+- Expo Camera, Location y Sensors
+
+## APK de Android
+
+El perfil `preview` de EAS genera un APK instalable:
+
+```bash
 npm install -g eas-cli
 eas login
 eas build:configure
 eas build -p android --profile preview
-
-El perfil preview esta configurado con buildType apk, por lo que el archivo generado
-es directamente instalable en dispositivos Android.
-
-## Funcionalidades
-
-- Camara: captura de fotografias y cambio entre camara frontal y trasera.
-- Ubicacion: solicitud de permiso, coordenadas GPS y direccion aproximada.
-- Acelerometro: lecturas en los tres ejes, magnitud total e indicadores visuales.
-- Adaptacion por plataforma: permisos, identificadores y estilos segun Android o iOS.
-- Navegacion: pestañas inferiores con pilas independientes y pantalla de detalle.
+```

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 import {
   isAccelerometerAvailable,
   setUpdateInterval,
@@ -6,7 +7,7 @@ import {
   magnitude
 } from '../services/sensorService';
 
-export default function useAccelerometer(interval = 200) {
+export default function useAccelerometer(interval = 200, enabled = true) {
   const [reading, setReading] = useState({ x: 0, y: 0, z: 0 });
   const [active, setActive] = useState(false);
   const [available, setAvailable] = useState(true);
@@ -16,6 +17,16 @@ export default function useAccelerometer(interval = 200) {
     let mounted = true;
 
     async function start() {
+      if (!enabled) {
+        setActive(false);
+        return;
+      }
+
+      if (Platform.OS === 'web') {
+        setAvailable(false);
+        return;
+      }
+
       const isAvailable = await isAccelerometerAvailable();
       if (!mounted) return;
       setAvailable(isAvailable);
@@ -37,7 +48,7 @@ export default function useAccelerometer(interval = 200) {
       }
       setActive(false);
     };
-  }, [interval]);
+  }, [interval, enabled]);
 
   return {
     reading,

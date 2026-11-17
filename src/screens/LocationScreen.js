@@ -72,6 +72,6 @@ const styles = StyleSheet.create({
   title: { ...typography.display, color: colors.primaryDark, fontSize: 28 },
   subtitle: { ...typography.body, color: colors.textMuted, marginTop: 4 },
   permissionBox: { backgroundColor: colors.surface, borderRadius: 24, padding: spacing.md },
-  errorBox: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, backgroundColor: '#FEF2F2', borderRadius: 12, padding: spacing.md, marginBottom: spacing.md },
+  errorBox: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, backgroundColor: colors.dangerSoft, borderRadius: 12, padding: spacing.md, marginBottom: spacing.md },
   errorText: { ...typography.caption, color: colors.danger, flex: 1 }
 });

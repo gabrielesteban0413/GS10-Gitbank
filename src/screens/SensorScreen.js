@@ -1,80 +1,133 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import useAccelerometer from '../hooks/useAccelerometer';
+import { useBanking } from '../state/BankingContext';
 import { colors } from '../theme/colors';
-import { spacing, radius } from '../theme/spacing';
-import { typography } from '../theme/typography';
 
-export default function SensorScreen() {
-  const { reading, available, magnitude } = useAccelerometer(200);
-  const [isAlert, setIsAlert] = useState(false);
-
-  useEffect(() => {
-    // Si la magnitud supera cierto umbral (movimiento brusco), activa alerta
-    if (magnitude > 2.5 && !isAlert) {
-      setIsAlert(true);
-      setTimeout(() => setIsAlert(false), 3000);
-    }
-  }, [magnitude, isAlert]);
-
-  if (!available) {
-    return (
-      <View style={styles.container}>
-        <Ionicons name="warning" size={64} color={colors.textMuted} />
-        <Text style={styles.title}>Sensor no disponible</Text>
-      </View>
-    );
-  }
+export default function SensorScreen({ navigation }) {
+  const { frozenCards, toggleCardFrozen } = useBanking();
+  const physicalCardFrozen = Boolean(frozenCards.physical);
 
   return (
-    <View style={[styles.container, isAlert && { backgroundColor: '#fde8e8' }]}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Seguridad</Text>
-        <Text style={styles.headerSubtitle}>Monitoreo de movimiento en tiempo real</Text>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+    >
+      <View style={styles.heading}>
+        <Text style={styles.eyebrow}>PROTECCIÓN DE CUENTA</Text>
+        <Text style={styles.title}>Seguridad</Text>
+        <Text style={styles.subtitle}>Controles rápidos para proteger tus tarjetas y tu privacidad.</Text>
       </View>
 
-      <View style={styles.sensorContainer}>
-        <View style={[styles.circle, isAlert && { borderColor: colors.danger }]}>
-          <Ionicons 
-            name={isAlert ? "alert-circle" : "shield-checkmark"} 
-            size={80} 
-            color={isAlert ? colors.danger : colors.primary} 
+      <View style={styles.statusCard}>
+        <View style={styles.statusIcon}>
+          <Ionicons name="shield-checkmark" size={27} color={colors.success} />
+        </View>
+        <View style={styles.statusCopy}>
+          <Text style={styles.statusTitle}>Tu cuenta está protegida</Text>
+          <Text style={styles.statusSubtitle}>Los controles de esta demo se aplican localmente.</Text>
+        </View>
+        <View style={styles.statusDot} />
+      </View>
+
+      <Text style={styles.sectionTitle}>Tarjetas</Text>
+      <View style={styles.controlCard}>
+        <View style={styles.controlRow}>
+          <View style={styles.controlIcon}>
+            <Ionicons name="card-outline" size={20} color={colors.primary} />
+          </View>
+          <View style={styles.controlCopy}>
+            <Text style={styles.controlTitle}>Gidbank Débito ···· 6986</Text>
+            <Text style={styles.controlSubtitle}>
+              {physicalCardFrozen ? 'Los pagos están pausados' : 'Pagos habilitados'}
+            </Text>
+          </View>
+          <View style={[styles.statePill, physicalCardFrozen && styles.statePillFrozen]}>
+            <Text style={[styles.stateText, physicalCardFrozen && styles.stateTextFrozen]}>
+              {physicalCardFrozen ? 'CONGELADA' : 'ACTIVA'}
+            </Text>
+          </View>
+        </View>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => toggleCardFrozen('physical')}
+          style={({ pressed }) => [styles.freezeButton, pressed && styles.pressed]}
+        >
+          <Ionicons
+            name={physicalCardFrozen ? 'sunny-outline' : 'snow-outline'}
+            size={17}
+            color={physicalCardFrozen ? colors.success : colors.primary}
           />
-        </View>
-        <Text style={[styles.statusText, isAlert && { color: colors.danger }]}>
-          {isAlert ? 'ALERTA DE MOVIMIENTO' : 'PROTEGIDO'}
-        </Text>
-        <Text style={styles.descText}>
-          {isAlert ? 'Se detectó un movimiento brusco en el dispositivo.' : 'El dispositivo está estable. El acelerómetro monitorea caídas o robos.'}
-        </Text>
+          <Text style={[styles.freezeText, physicalCardFrozen && styles.unfreezeText]}>
+            {physicalCardFrozen ? 'Descongelar tarjeta' : 'Congelar tarjeta'}
+          </Text>
+        </Pressable>
       </View>
 
-      <View style={styles.dataCard}>
-        <Text style={styles.dataTitle}>Telemetría del Sensor</Text>
-        <View style={styles.dataRow}>
-          <View style={styles.dataPoint}><Text style={styles.dataLabel}>Eje X</Text><Text style={styles.dataValue}>{reading.x.toFixed(2)}</Text></View>
-          <View style={styles.dataPoint}><Text style={styles.dataLabel}>Eje Y</Text><Text style={styles.dataValue}>{reading.y.toFixed(2)}</Text></View>
-          <View style={styles.dataPoint}><Text style={styles.dataLabel}>Eje Z</Text><Text style={styles.dataValue}>{reading.z.toFixed(2)}</Text></View>
+      <Text style={styles.sectionTitle}>Privacidad</Text>
+      <View style={styles.privacyCard}>
+        <View style={styles.privacyIcon}>
+          <Ionicons name="eye-off-outline" size={20} color={colors.primary} />
         </View>
+        <Text style={styles.privacyTitle}>Oculta tu saldo al instante</Text>
+        <Text style={styles.privacyDescription}>
+          En Inicio, agita el teléfono para ocultar el saldo. También puedes tocar el icono del ojo.
+        </Text>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => navigation.navigate('Inicio')}
+          style={styles.privacyAction}
+        >
+          <Text style={styles.privacyActionText}>Ir a Inicio</Text>
+          <Ionicons name="arrow-forward" size={15} color={colors.primary} />
+        </Pressable>
       </View>
-    </View>
+
+      <View style={styles.notice}>
+        <Ionicons name="information-circle-outline" size={16} color={colors.textMuted} />
+        <Text style={styles.noticeText}>
+          Gidbank es un prototipo: no sustituye los controles de seguridad de una entidad bancaria.
+        </Text>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background, padding: spacing.md, paddingTop: spacing.xl },
-  header: { marginBottom: spacing.xl, marginTop: spacing.md },
-  headerTitle: { ...typography.display, color: colors.primaryDark, fontSize: 28 },
-  headerSubtitle: { ...typography.body, color: colors.textMuted },
-  sensorContainer: { alignItems: 'center', marginVertical: spacing.lg },
-  circle: { width: 180, height: 180, borderRadius: 90, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center', borderWidth: 4, borderColor: colors.primarySoft, shadowColor: colors.primary, shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.1, shadowRadius: 20, elevation: 5 },
-  statusText: { ...typography.title, color: colors.primary, marginTop: spacing.lg, letterSpacing: 2 },
-  descText: { ...typography.body, color: colors.textMuted, textAlign: 'center', marginTop: spacing.sm, paddingHorizontal: spacing.lg },
-  dataCard: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg, marginTop: spacing.xl },
-  dataTitle: { ...typography.subtitle, color: colors.primaryDark, marginBottom: spacing.md, textAlign: 'center' },
-  dataRow: { flexDirection: 'row', justifyContent: 'space-around' },
-  dataPoint: { alignItems: 'center' },
-  dataLabel: { ...typography.caption, color: colors.textMuted },
-  dataValue: { ...typography.title, color: colors.primary, fontSize: 20 }
+  container: { flex: 1, backgroundColor: colors.background },
+  content: { padding: 20, paddingBottom: 36 },
+  heading: { marginBottom: 20 },
+  eyebrow: { color: colors.primary, fontSize: 9, fontWeight: '800', letterSpacing: 1, marginBottom: 7 },
+  title: { color: colors.primaryDark, fontSize: 27, fontWeight: '800' },
+  subtitle: { color: colors.textMuted, fontSize: 12, lineHeight: 18, marginTop: 5 },
+  statusCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: colors.successSoft, borderRadius: 18, padding: 15, marginBottom: 23 },
+  statusIcon: { width: 43, height: 43, borderRadius: 15, backgroundColor: '#1C493A', alignItems: 'center', justifyContent: 'center', marginRight: 11 },
+  statusCopy: { flex: 1 },
+  statusTitle: { color: colors.primaryDark, fontSize: 12, fontWeight: '800' },
+  statusSubtitle: { color: colors.textMuted, fontSize: 9, marginTop: 4 },
+  statusDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.success },
+  sectionTitle: { color: colors.primaryDark, fontSize: 14, fontWeight: '800', marginBottom: 10 },
+  controlCard: { backgroundColor: colors.surface, borderRadius: 18, padding: 15, marginBottom: 22 },
+  controlRow: { flexDirection: 'row', alignItems: 'center' },
+  controlIcon: { width: 41, height: 41, borderRadius: 14, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center', marginRight: 10 },
+  controlCopy: { flex: 1 },
+  controlTitle: { color: colors.primaryDark, fontSize: 11, fontWeight: '800' },
+  controlSubtitle: { color: colors.textMuted, fontSize: 9, marginTop: 4 },
+  statePill: { backgroundColor: colors.successSoft, paddingHorizontal: 8, paddingVertical: 5, borderRadius: 12 },
+  statePillFrozen: { backgroundColor: colors.warningSoft },
+  stateText: { color: colors.success, fontSize: 8, fontWeight: '800' },
+  stateTextFrozen: { color: colors.warning },
+  freezeButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border, paddingVertical: 11, borderRadius: 13, marginTop: 14 },
+  freezeText: { color: colors.primary, fontSize: 10, fontWeight: '800', marginLeft: 7 },
+  unfreezeText: { color: colors.success },
+  pressed: { opacity: 0.72 },
+  privacyCard: { backgroundColor: colors.surface, borderRadius: 18, padding: 16 },
+  privacyIcon: { width: 40, height: 40, borderRadius: 14, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center', marginBottom: 12 },
+  privacyTitle: { color: colors.primaryDark, fontSize: 12, fontWeight: '800' },
+  privacyDescription: { color: colors.textMuted, fontSize: 10, lineHeight: 16, marginTop: 5 },
+  privacyAction: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', marginTop: 13 },
+  privacyActionText: { color: colors.primary, fontSize: 10, fontWeight: '800', marginRight: 5 },
+  notice: { flexDirection: 'row', alignItems: 'flex-start', marginTop: 19, paddingHorizontal: 2 },
+  noticeText: { color: colors.textMuted, fontSize: 9, lineHeight: 14, marginLeft: 6, flex: 1 },
 });

@@ -17,7 +17,7 @@ export default function InfoCard({ icon, title, children }) {
   );
 }
 const styles = StyleSheet.create({
-  card: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg, marginBottom: spacing.md, shadowColor: colors.primaryDark, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.08, shadowRadius: 15, elevation: 4 },
+  card: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg, marginBottom: spacing.md, shadowColor: colors.background, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.35, shadowRadius: 15, elevation: 4 },
   header: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.md },
   iconWrap: { width: 36, height: 36, borderRadius: radius.md, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center', marginRight: spacing.sm },
   title: { ...typography.subtitle, color: colors.primary },

@@ -1,6 +1,6 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import TabNavigator from './TabNavigator';
+import DrawerNavigator from './DrawerNavigator';
 import DetailsScreen from '../screens/DetailsScreen';
 import { colors } from '../theme/colors';
 
@@ -18,8 +18,8 @@ export default function RootNavigator() {
       }}
     >
       <Stack.Screen
-        name="Tabs"
-        component={TabNavigator}
+        name="Bank"
+        component={DrawerNavigator}
         options={{ headerShown: false }}
       />
       <Stack.Screen
